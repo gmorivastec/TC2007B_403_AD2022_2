@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "171077239647",
+    "project_id": "fir-am-a6855",
+    "storage_bucket": "fir-am-a6855.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171077239647:android:a4bf881a840252f5ed2cea",
+        "android_client_info": {
+          "package_name": "mx.itesm.firebaseAm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "171077239647-pnp9jc7jg3078ruc6f3m6kc19jkso8eu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeOUXFPXZRIAxIh416CPELHDKcatoDbB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "171077239647-pnp9jc7jg3078ruc6f3m6kc19jkso8eu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
