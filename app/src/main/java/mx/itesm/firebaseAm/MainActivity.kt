@@ -6,30 +6,35 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import mx.itesm.firebaseAm.databinding.ActivityMainBinding
+
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var login : EditText
-    lateinit var password : EditText
-    lateinit var nombre : EditText
-    lateinit var edad : EditText
+    lateinit var binding : ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        //setContentView(R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        login = findViewById(R.id.login)
-        password = findViewById(R.id.password)
-        nombre = findViewById(R.id.nombre)
-        edad = findViewById(R.id.edad)
+        // view binding - asociar los elementos de una vista con un objeto
+        // de kotlin para agilizar acceso y reducir errores
+
+        // siguiente paso - data binding
+        // asociar datos específicos de mi actividad con un elemento específico
+        // De la vista
     }
 
     fun registro(view : View?){
 
-        var loginData = login.text.toString()
-        var passwordData = password.text.toString()
+        var loginData = binding.login.text.toString()
+        var passwordData = binding.password.text.toString()
 
         var authTask = Firebase.auth.createUserWithEmailAndPassword(loginData, passwordData)
 
@@ -50,8 +55,8 @@ class MainActivity : AppCompatActivity() {
 
     fun login(view : View?) {
 
-        var loginData = login.text.toString()
-        var passwordData = password.text.toString()
+        var loginData = binding.login.text.toString()
+        var passwordData = binding.password.text.toString()
 
         var authTask = Firebase.auth.signInWithEmailAndPassword(loginData, passwordData)
 
@@ -96,5 +101,50 @@ class MainActivity : AppCompatActivity() {
     fun verificarUsuarioGUI(view : View?){
 
         verificarUsuario()
+    }
+
+    fun registrarDatos(view : View?){
+
+        // guardar nueva info en db remota
+        // la info se guarda por medio de hashmaps
+        // firestore es no-relacional
+        // estructura es por documentos similar a JSON
+
+        // hashmap
+
+        val perrito = hashMapOf(
+            "nombre" to binding.nombre.text.toString(),
+            "edad" to binding.edad.text.toString()
+        )
+
+        // obtenemos referencia a la colección
+        val coleccion : CollectionReference =
+            Firebase.firestore.collection("perritos")
+
+        // con la referencia a la colección agregamos el dato
+        val taskAdd = coleccion.add(perrito)
+
+        // escuchamos al término de la ejecución
+        // de guardado
+        taskAdd.addOnSuccessListener { documentReference ->
+
+            Toast.makeText(
+                this,
+                "id: ${documentReference.id}",
+                Toast.LENGTH_SHORT
+            ).show()
+
+        }.addOnFailureListener{ error ->
+
+            Toast.makeText(
+                this,
+                "ERROR AL GUARDADO",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            Log.e("FIRESTORE", "error: $error")
+        }
+
+
     }
 }
