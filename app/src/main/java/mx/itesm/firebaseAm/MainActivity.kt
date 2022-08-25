@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import mx.itesm.firebaseAm.databinding.ActivityMainBinding
@@ -144,7 +145,80 @@ class MainActivity : AppCompatActivity() {
 
             Log.e("FIRESTORE", "error: $error")
         }
+    }
 
+    fun solicitarDatos (view : View?){
 
+        // aquí es el query
+
+        // 1- query "regular"
+        // solicitamos datos y obtenemos información
+        val coleccion = Firebase.firestore.collection("perritos")
+
+        val queryTask = coleccion.get()
+
+        queryTask.addOnSuccessListener { result ->
+
+            // algo sencillo - recorrer datos
+            Toast.makeText(
+                this,
+                "QUERY EXITOSO",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            for(documentoActual in result){
+                Log.d(
+                    "FIRESTORE",
+                    "${documentoActual.id} ${documentoActual.data}"
+                )
+            }
+        }.addOnFailureListener{ error ->
+
+            Log.e("FIRESTORE", "error en query: $error")
+        }
+
+        // 2- suscribirse a actualizaciones
+        coleccion.addSnapshotListener{ datos, e ->
+
+            // esta lógica se va a ejecutar cada vez que
+            // haya un cambio en la colección
+
+            if(e != null){
+
+                Log.e("FIRESTORE", "error: $e")
+
+                // return con scope
+                // aclara qué parte del código es la que afecta
+                // el comando
+                return@addSnapshotListener
+            }
+
+            Log.e("REALTIME", "ENTRANDO A CAMBIOS")
+            // ejemplo igual de sencillo -
+            // recorrer datos de colección
+            for (cambios in datos!!.documentChanges){
+
+                when(cambios.type){
+
+                    DocumentChange.Type.ADDED ->
+                        Log.d(
+                            "REALTIME",
+                            "agregado: ${cambios.document.data}"
+                        )
+
+                    DocumentChange.Type.MODIFIED ->
+                        Log.d(
+                            "REALTIME",
+                            "modificado: ${cambios.document.data}"
+                        )
+
+                    DocumentChange.Type.REMOVED ->
+                        Log.d(
+                            "REALTIME",
+                            "removido: ${cambios.document.data}"
+                        )
+                }
+            }
+        }
     }
 }
